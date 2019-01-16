@@ -20,7 +20,6 @@ class DataBase():
                        )
         self.cursor=self.con_nection.cursor()
 
- 
     def create_database(self):
         """
             This instance method creates a database called questioner db.
