@@ -2,38 +2,35 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import psycopg2.extras as p_extras
 
+
 class DataBase():
-    """
-        This class will create and connect to questioner_db
-    """
-    
+
+
     def __init__(self):
-        """
-            Connects to default postgress database.
-             it creates a connection and a cursor object
-         """
-        self.con_nection=psycopg2.connect(
+        self.con_nection = psycopg2.connect(
                     dbname='postgres',
-                     user='postgres',
-                      host='localhost',
-                       password=' '
-                       )
-        self.cursor=self.con_nection.cursor()
+                    user='postgres',
+                    host='localhost',
+                    password=' '
+                    )
+        self.cursor = self.con_nection.cursor()
 
     def create_database(self):
         """
             This instance method creates a database called questioner db.
-            It uses the cursor object to execute the select and create 
-            queries.
+            It uses the cursor object to execute the select and create queries.
         """
         try:
             self.cursor.execute(
-                "SELECT COUNT(*) = 0 FROM pg_catalog.pg_database WHERE datname = 'questioner_db'"
+                """SELECT COUNT(*)=0 FROM pg_catalog.pg_database WHERE datname='questioner_db'
+                """
                 )
             not_exists_row = self.cursor.fetchone()
             not_exists = not_exists_row[0]
             if not_exists:
-                self.con_nection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+                self.con_nection.set_isolation_level(
+                    ISOLATION_LEVEL_AUTOCOMMIT
+                    )
                 self.cursor.execute('CREATE DATABASE questioner_db')
                 return 'database created'
             else:
@@ -49,20 +46,20 @@ class DataBase():
             This instance method connects to new questioner database created.
             It creates a connection and cursor object.
         """
-        con=psycopg2.connect(
+        con = psycopg2.connect(
                 dbname='questioner_db',
                 user='postgres',
                 host='localhost',
                 password=' '
                 )
-        cur=con.cursor(cursor_factory=p_extras.DictCursor)
+        cur = con.cursor(cursor_factory=p_extras.DictCursor)
         return cur, con
-    
+
     def create_db_tables(self):
         """
-            This instance method creates table users in questioner_db 
+            This instance method creates table users in questioner_db.
         """
-        tables=(
+        tables = (
             """CREATE TABLE IF NOT EXISTS users(
                 id SERIAL PRIMARY KEY,
                 firstname VARCHAR(50) NOT NULL,
@@ -75,9 +72,9 @@ class DataBase():
             """,
                 )
         try:
-            con_values=self.connect_questioner_db()
-            cur=con_values[0]
-            con=con_values[1]
+            con_values = self.connect_questioner_db()
+            cur = con_values[0]
+            con = con_values[1]
             """
                 This creates tables one after the other and
                 then commits the changes.
@@ -87,4 +84,4 @@ class DataBase():
                 print('TABLE CREATED')
             con.commit()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)   
+            print(error)
